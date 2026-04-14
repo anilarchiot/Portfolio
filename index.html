@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Archiot Anil | Engineering Leader</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  :root {
+    --primary: #6366f1; /* Electric Indigo */
+    --accent: #10b981;  /* System Success Green */
+    --warning: #f59e0b; /* Lighthouse Orange */
+    --error: #f43f5e;   /* Defect Red */
+    --bg: #050505;
+    --card: #0f1115;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    line-height: 1.6;
+    background: var(--bg);
+    color: #e2e8f0;
+    overflow-x: hidden;
+  }
+
+  /* Engineering Grid Background */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: -1;
+  }
+
+  /* HUD Overlay UI */
+  #fx-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .scanner {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    box-shadow: 0 0 15px var(--primary);
+    animation: scanLine 10s linear infinite;
+  }
+
+  @keyframes scanLine {
+    0% { top: -5%; opacity: 0; }
+    5% { opacity: 0.5; }
+    95% { opacity: 0.5; }
+    100% { top: 105%; opacity: 0; }
+  }
+
+  .sys-logs {
+    position: absolute;
+    top: 120px;
+    left: 30px;
+    width: 250px;
+    font-size: 10px;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .vitals {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    padding: 15px;
+    background: rgba(15, 17, 21, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    font-size: 10px;
+    backdrop-filter: blur(5px);
+  }
+
+  .hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+  }
+
+  #main-canvas { position: absolute; inset: 0; z-index: 0; opacity: 0.6; }
+
+  .hero-inner {
+    position: relative;
+    z-index: 10;
+    max-width: 900px;
+  }
+
+  .title-main {
+    font-size: clamp(3.5rem, 10vw, 7.5rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    color: #fff;
+    margin-bottom: 2rem;
+  }
+
+  .title-main span {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+  }
+
+  .nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 25px 40px;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(5, 5, 5, 0.8);
+    backdrop-filter: blur(15px);
+  }
+
+  .metrics {
+    padding: 100px 0;
+    background: #050505;
+  }
+
+  .glass-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 3rem;
+    border-radius: 4px;
+    transition: border 0.3s ease;
+  }
+  .glass-card:hover { border-color: var(--primary); }
+
+  .stat h2 {
+    font-size: clamp(4rem, 8vw, 7rem);
+    font-weight: 800;
+    color: var(--primary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .figure-node { fill: #334155; transition: 0.3s; }
+  .figure-wrap.active .figure-node { 
+    fill: var(--accent); 
+    filter: drop-shadow(0 0 8px var(--accent));
+  }
+  .connector-line { stroke: #334155; stroke-dasharray: 5; }
+  .figure-wrap.active .connector-line { stroke: var(--accent); }
+
+  #click-prompt {
+    background: var(--primary);
+    font-family: 'JetBrains Mono';
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  .reveal { opacity: 0; transform: translateY(30px); transition: 1s cubic-bezier(0.16, 1, 0.3, 1); }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+
+  .filter-gate {
+    width: 2px;
+    height: 100px;
+    background: var(--accent);
+    box-shadow: 0 0 15px var(--accent);
+    position: relative;
+  }
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+  }
+
+  .hub-core {
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--primary);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+  .comp-box {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #fff;
+    opacity: 0;
+  }
+
+  /* Performance Gauge Styles */
+  .gauge-svg {
+    transform: rotate(-90deg);
+  }
+  .gauge-bg {
+    fill: none;
+    stroke: #1e293b;
+    stroke-width: 4;
+  }
+  .gauge-fill {
+    fill: none;
+    stroke: var(--warning);
+    stroke-width: 4;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    transition: stroke-dashoffset 2s cubic-bezier(0.65, 0, 0.35, 1), stroke 1s ease;
+  }
+
+  /* Skill Map Styles */
+  .skill-node {
+    position: absolute;
+    border-radius: 4px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    min-width: 180px;
+    z-index: 20;
+  }
+
+  @keyframes float-node {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    33% { transform: translateY(-10px) translateX(5px); }
+    66% { transform: translateY(5px) translateX(-5px); }
+  }
+
+  .animate-float-slow { animation: float-node 8s ease-in-out infinite; }
+  .animate-float-mid { animation: float-node 6s ease-in-out infinite; }
+  .animate-float-fast { animation: float-node 5s ease-in-out infinite; }
+
+  .animate-spin-slow { animation: spin 20s linear infinite; }
+  .animate-spin-reverse { animation: spin 15s linear infinite reverse; }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .glass-card {
+    backdrop-filter: blur(8px);
+    border-radius: 2px;
+    transition: all 0.5s ease;
+  }
+  
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    transform: translateY(-5px);
+  }
+
+  .animate-spin-slow { animation: spin 15s linear infinite; }
+  .animate-spin-reverse { animation: spin 10s linear infinite reverse; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes scan {
+    0% { top: 0%; opacity: 0; }
+    50% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+  
+  .animate-spin-slow { animation: spin 12s linear infinite; }
+  .animate-spin-reverse { animation: spin 20s linear infinite reverse; }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="nav">
+  <div>
+    <h1 class="text-xl font-bold text-white tracking-tighter">ARCHIOT ANIL</h1>
+    <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Principal Systems Engineer</p>
+  </div>
+  <div class="hidden md:flex gap-8 items-center text-[10px] font-bold tracking-widest text-slate-500">
+    <a href="#contact" 
+   class="group relative inline-flex items-center justify-center px-6 py-2.5 font-mono text-[11px] font-bold uppercase tracking-widest text-white transition-all duration-300 ease-in-out">
+    <div class="absolute inset-0 rounded-full bg-indigo-600 transition-all duration-300 group-hover:bg-indigo-500 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]"></div>
+    
+    <div class="absolute inset-[1px] rounded-full bg-gradient-to-b from-white/20 to-transparent opacity-50"></div>
+
+    <span class="relative flex items-center gap-2">
+        HIRE_ENGINEER
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300 group-hover:translate-x-1">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+    </span>
+</a>
+  </div>
+</div>
+
+<section class="hero">
+  <canvas id="main-canvas"></canvas>
+  <div id="fx-overlay">
+    <div class="scanner"></div>
+    <div class="sys-logs" id="log-pipe"></div>
+    <div class="vitals">
+      <div class="flex gap-4">
+        <div><p class="opacity-50">EXPERIENCE</p><p class="text-white font-bold">7.24_YRS</p></div>
+        <div><p class="opacity-50">STACK_HEALTH</p><p class="text-emerald-500 font-bold">OPTIMAL</p></div>
+        <div><p class="opacity-50">LOAD</p><p class="text-indigo-500 font-bold"><span id="load-pct">0</span>%</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-inner px-6 text-center">
+    <p class="text-indigo-500 font-mono text-sm mb-4 tracking-widest uppercase">Available for Leadership Roles 2026</p>
+    <h1 class="title-main">ENGINEERING <span>FRONTEND</span> SYSTEMS</h1>
+    <p class="text-slate-400 max-w-xl mx-auto text-lg font-light leading-relaxed">
+      Specialized in <span class="text-white font-semibold">Angular Architecture</span>, Mentorship, and the delivery of high-performing, scalable enterprise web applications.
+    </p>
+  </div>
+</section>
+
+<section class="metrics space-y-32">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="glass-card grid md:grid-cols-2 gap-16 items-center">
+      <div class="reveal">
+        <h3 class="text-indigo-500 font-mono text-xs font-bold mb-4 tracking-[0.2em]">01 // IMPACT</h3>
+        <h2 class="text-4xl font-extrabold text-white mb-6">Massive Scale Operations</h2>
+        <p class="text-slate-400 text-lg">Owning frontend architecture for platforms supporting global enterprise traffic.</p>
+      </div>
+      <div class="stat reveal text-center md:text-right">
+        <h2 class="count-me" data-val="10000">0</h2>
+        <p class="text-xs font-mono uppercase tracking-widest opacity-50">Active Managed Users</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="glass-card grid md:grid-cols-2 gap-16 items-center">
+      <div class="stat reveal order-2 md:order-1">
+        <div class="relative inline-block">
+            <div id="click-prompt" class="absolute -top-10 left-0 opacity-0 transition-all duration-500">CLICK_TO_SYNC</div>
+            <div class="flex items-center" id="team-sync-row"></div>
+        </div>
+        <div class="h-8 mt-4"><p id="mentor-feed" class="text-[10px] font-mono text-emerald-500 uppercase tracking-widest"></p></div>
+        <h2 class="text-white text-6xl font-bold mt-2">6 Engineers</h2>
+      </div>
+      <div class="reveal order-1 md:order-2">
+        <h3 class="text-indigo-500 font-mono text-xs font-bold mb-4 tracking-[0.2em]">02 // LEADERSHIP</h3>
+        <h2 class="text-4xl font-extrabold text-white mb-6">Team Growth & Mentorship</h2>
+        <p class="text-slate-400 text-lg">Leading cross-functional squads to align engineering output with business objectives.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="glass-card grid md:grid-cols-2 gap-16 items-center">
+      <div class="reveal">
+        <h3 class="text-emerald-500 font-mono text-xs font-bold mb-4 tracking-[0.2em]">03 // EFFICIENCY</h3>
+        <h2 class="text-4xl font-extrabold text-white mb-6">Optimized Delivery Cycles</h2>
+        <p class="text-slate-400 text-lg">Reduced sprint delivery cycle time by <span class="text-emerald-400 font-bold">~30%</span>.</p>
+      </div>
+      <div class="reveal relative h-40 flex flex-col justify-center overflow-hidden">
+        <div class="relative w-full h-[2px] bg-slate-800 rounded-full">
+          <div id="velocity-line" class="absolute h-full bg-indigo-500 shadow-[0_0_15px_#6366f1] w-full opacity-20"></div>
+        </div>
+        <div id="sprint-packet" class="absolute top-1/2 -translate-y-1/2 flex flex-col items-center opacity-0">
+          <div class="w-3 h-3 bg-white rotate-45 shadow-[0_0_10px_#fff]"></div>
+          <span class="text-[8px] font-mono mt-2 text-indigo-400 font-bold">VELOCITY_PKT</span>
+        </div>
+        <div class="flex justify-between mt-8 font-mono text-[9px] tracking-[0.3em] text-slate-500 uppercase">
+          <span>Sprint_Start</span>
+          <span class="text-emerald-500 animate-pulse">30% Faster</span>
+          <span>Deploy_Prod</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="glass-card grid md:grid-cols-2 gap-16 items-center">
+      <div id="quality-container" class="stat reveal order-2 md:order-1 relative h-48 flex items-center justify-center bg-black/40 rounded border border-white/5 overflow-hidden">
+        <div class="filter-gate"></div>
+      </div>
+      <div class="reveal order-1 md:order-2">
+        <h3 class="text-indigo-500 font-mono text-xs font-bold mb-4 tracking-[0.2em]">04 // QUALITY</h3>
+        <h2 class="text-4xl font-extrabold text-white mb-6">Defect Reduction</h2>
+        <p class="text-slate-400 text-lg">Reduced UI production defects by <span class="text-indigo-400 font-bold">40%</span> via rigorous review standards.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="glass-card grid md:grid-cols-2 gap-16 items-center">
+      <div class="reveal">
+        <h3 class="text-indigo-500 font-mono text-xs font-bold mb-4 tracking-[0.2em]">05 // ARCHITECTURE</h3>
+        <h2 class="text-4xl font-extrabold text-white mb-6">Modular Design Systems</h2>
+        <p class="text-slate-400 text-lg">Established a reusable component library improving code reuse by <span class="text-indigo-400 font-bold">25%</span>.</p>
+      </div>
+      <div id="library-container" class="reveal relative h-48 flex items-center justify-center overflow-hidden bg-black/40 rounded border border-white/5">
+        <div class="hub-core rotate-45"><div class="rotate-[-45deg] font-mono text-[10px] text-white font-bold">CORE</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 pb-32">
+    <div class="glass-card grid md:grid-cols-2 gap-16 items-center">
+      <div id="performance-container" class="stat reveal order-2 md:order-1 relative h-64 flex flex-col items-center justify-center bg-black/40 rounded border border-white/5">
+        <svg class="gauge-svg" width="120" height="120">
+          <circle class="gauge-bg" cx="60" cy="60" r="45"></circle>
+          <circle id="gauge-fill" class="gauge-fill" cx="60" cy="60" r="45"></circle>
+        </svg>
+        <div class="absolute flex flex-col items-center" style="margin-top:-25px">
+          <span id="perf-score" class="text-4xl font-bold font-mono text-slate-500">60</span>
+          <span class="text-[10px] font-mono uppercase tracking-widest opacity-40">Score</span>
+        </div>
+        <div class="mt-4 font-mono text-[9px] text-emerald-500 tracking-[0.2em] animate-pulse">OPTIMIZATION_ACTIVE</div>
+      </div>
+      <div class="reveal order-1 md:order-2">
+        <h3 class="text-indigo-500 font-mono text-xs font-bold mb-4 tracking-[0.2em]">06 // OPTIMIZATION</h3>
+        <h2 class="text-4xl font-extrabold text-white mb-6">Core Web Vitals</h2>
+        <p class="text-slate-400 text-lg">Improved Lighthouse performance score from <span class="text-warning">60</span> to <span class="text-emerald-500 font-bold">90+</span> through asset optimization and lazy-loading strategies.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 pb-32">
+    <div class="mb-16 reveal">
+      <h3 class="text-indigo-500 font-mono text-xs font-bold mb-4 tracking-[0.3em] uppercase">07 // CAREER_ASCENSION_PATH</h3>
+      <h2 class="text-5xl font-extrabold text-white">Learning Curve</h2>
+    </div>
+
+    <div class="space-y-12">
+      <div class="glass-card relative border-l-4 border-indigo-500 reveal group">
+        <div class="absolute -left-[14px] top-8 w-6 h-6 bg-indigo-500 rotate-45 shadow-[0_0_20px_#6366f1] flex items-center justify-center">
+          <div class="text-[10px] text-white font-bold -rotate-45">03</div>
+        </div>
+        <div class="grid md:grid-cols-12 gap-8">
+          <div class="md:col-span-4">
+            <div class="text-indigo-400 font-mono text-[10px] mb-2 tracking-widest uppercase font-bold">LATEST_UPGRADE // 2023-PRESENT</div>
+            <h4 class="text-white text-2xl font-black tracking-tight">Antares Vision</h4>
+            <p class="text-indigo-300 font-mono text-xs mt-1 italic">Principal UI Architect</p>
+          </div>
+          <div class="md:col-span-8">
+            <p class="text-slate-300 text-lg mb-4">
+              Mastery of <span class="text-white font-bold">Angular v15+ Architecture</span>. Transitioned from feature development to owning the entire frontend ecosystem and engineering culture.
+            </p>
+            <ul class="grid grid-cols-2 gap-y-2 text-[11px] font-mono text-emerald-400 uppercase">
+              <li>+ Scalable_Micro_Frontends</li>
+              <li>+ Cross_Squad_Mentorship</li>
+              <li>+ CI_CD_Pipeline_Design</li>
+              <li>+ Performance_Auditing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card relative border-l-4 border-slate-700 reveal opacity-80 hover:opacity-100 transition-opacity">
+        <div class="absolute -left-[10px] top-8 w-4 h-4 bg-slate-700 rotate-45 flex items-center justify-center">
+          <div class="text-[8px] text-white font-bold -rotate-45">02</div>
+        </div>
+        <div class="grid md:grid-cols-12 gap-8">
+          <div class="md:col-span-4">
+            <div class="text-slate-500 font-mono text-[10px] mb-2 tracking-widest uppercase">INTERMEDIATE_SYNC // 2020-2021</div>
+            <h4 class="text-white text-xl font-bold tracking-tight">Uniphore</h4>
+            <p class="text-slate-400 font-mono text-xs mt-1">Senior UI Implementation</p>
+          </div>
+          <div class="md:col-span-8">
+            <p class="text-slate-400">
+              Focused on <span class="text-slate-200">High-Volume Data Visualization</span>. Learned the importance of strict design tokens and standardized state management across large teams.
+            </p>
+            <div class="mt-3 flex gap-4 text-[9px] font-mono text-indigo-400 uppercase">
+              <span>[RxJS_Optimization]</span>
+              <span>[Data_Dashboards]</span>
+              <span>[API_Standardization]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card relative border-l-4 border-slate-800 reveal opacity-60 hover:opacity-100 transition-opacity">
+        <div class="absolute -left-[10px] top-8 w-4 h-4 bg-slate-800 rotate-45 flex items-center justify-center">
+          <div class="text-[8px] text-white font-bold -rotate-45">01</div>
+        </div>
+        <div class="grid md:grid-cols-12 gap-8">
+          <div class="md:col-span-4">
+            <div class="text-slate-600 font-mono text-[10px] mb-2 tracking-widest uppercase">INITIAL_BOOT // 2017-2020</div>
+            <h4 class="text-white text-xl font-bold tracking-tight">TCS</h4>
+            <p class="text-slate-400 font-mono text-xs mt-1">Systems Engineer</p>
+          </div>
+          <div class="md:col-span-8">
+            <p class="text-slate-400">
+              Foundation in <span class="text-slate-200">Enterprise Engineering</span>. Developed core skills in Angular module patterns and full-lifecycle delivery within a structured corporate environment.
+            </p>
+            <div class="mt-3 flex gap-4 text-[9px] font-mono text-slate-500 uppercase">
+              <span>[Angular_Fundamentals]</span>
+              <span>[Feature_Ownership]</span>
+              <span>[Enterprise_Release]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<section class="max-w-7xl mx-auto px-6 pb-32" style="border-radius:0px">
+  <div class="mb-16 reveal text-center">
+    <h3 class="text-amber-500 font-mono text-xs font-bold mb-4 tracking-[0.3em] uppercase">09 // SYSTEM_NIRVANA</h3>
+    <h2 class="text-5xl font-extrabold text-white">Engineering Enlightenment</h2>
+  </div>
+
+  <div class="relative h-[800px] w-full flex items-center justify-center overflow-hidden bg-[#020202] rounded-[4rem] border border-indigo-500/20 shadow-[0_0_100px_rgba(99,102,241,0.1)] reveal" style="border-radius:0px">
+    
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.05)_0%,transparent_70%)]"></div>
+    
+    <div class="relative z-10 scale-110">
+      <svg width="400" height="400" viewBox="0 0 200 200" class="drop-shadow-[0_0_50px_rgba(99,102,241,0.5)]">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        
+        <path d="M100 30 C140 30 170 60 170 110 C170 160 140 190 100 190 C60 190 30 160 30 110 C30 60 60 30 100 30Z" 
+              fill="none" stroke="url(#enlightenedGrad)" stroke-width="0.5" stroke-dasharray="1 3" />
+        
+        <circle cx="100" cy="75" r="5" fill="var(--warning)" filter="url(#glow)">
+          <animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
+        </circle>
+        
+        <path d="M65 105 Q80 110 95 105" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+        <path d="M105 105 Q120 110 135 105" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+
+        <circle cx="100" cy="100" r="85" stroke="var(--primary)" stroke-width="0.2" fill="none" stroke-dasharray="10 20" class="animate-spin-slow" />
+        <circle cx="100" cy="100" r="95" stroke="var(--warning)" stroke-width="0.1" fill="none" stroke-dasharray="5 15" class="animate-spin-reverse" />
+
+        <linearGradient id="enlightenedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:var(--primary);stop-opacity:1" />
+          <stop offset="50%" style="stop-color:var(--warning);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:var(--primary);stop-opacity:1" />
+        </linearGradient>
+      </svg>
+    </div>
+
+    <div class="absolute inset-0 pointer-events-none">
+      
+      <div class="absolute top-[15%] left-1/2 -translate-x-1/2 text-center">
+        <div class="text-[10px] font-mono text-amber-500 tracking-[0.5em] mb-2">WELCOME TO ARCHIE'S MIND</div>
+        <div class="h-[1px] w-32 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto"></div>
+      </div>
+
+      <div class="absolute top-[25%] left-[10%] md:left-[20%] w-56 animate-float-slow">
+        <div class="glass-card !bg-amber-500/5 !border-amber-500/20 !p-3">
+          <p class="text-amber-500 font-bold text-[10px] mb-1">STRATEGIC_VISION</p>
+          <p class="text-[9px] text-slate-400 font-mono uppercase leading-tight">Aligning engineering culture with long-term business goals.</p>
+        </div>
+      </div>
+
+      <div class="absolute top-[25%] right-[10%] md:right-[20%] w-56 animate-float-mid">
+        <div class="glass-card !bg-indigo-500/5 !border-indigo-500/20 !p-3">
+          <p class="text-indigo-400 font-bold text-[10px] mb-1">TECHNICAL_MASTERY</p>
+          <p class="text-[9px] text-slate-400 font-mono uppercase leading-tight">Angular v15+ • Scalable Micro-Frontends • Deep RxJS.</p>
+        </div>
+      </div>
+
+      <div class="absolute bottom-[30%] left-[5%] md:left-[15%] w-56 animate-float-fast">
+        <div class="glass-card !bg-emerald-500/5 !border-emerald-500/20 !p-3">
+          <p class="text-emerald-400 font-bold text-[10px] mb-1">MENTOR_FLOW</p>
+          <p class="text-[9px] text-slate-400 font-mono uppercase leading-tight">Leading 6+ engineers to peak performance delivery.</p>
+        </div>
+      </div>
+
+      <div class="absolute bottom-[30%] right-[5%] md:right-[15%] w-56 animate-float-slow">
+        <div class="glass-card !bg-fuchsia-500/5 !border-fuchsia-500/20 !p-3">
+          <p class="text-fuchsia-400 font-bold text-[10px] mb-1">SYSTEM_PURITY</p>
+          <p class="text-[9px] text-slate-400 font-mono uppercase leading-tight">40% reduction in production defects via clean code.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-8 font-mono text-[10px] text-slate-500">
+      <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"></span> ENGINE_CALM</div>
+      <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> LOGIC_PEAK</div>
+      <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> SYNC_COMPLETE</div>
+    </div>
+  </div>
+</section>
+<section class="max-w-7xl mx-auto px-6 pb-32">
+  <div class="mb-12 reveal">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="h-[1px] w-12 bg-indigo-500"></div>
+      <h3 class="text-indigo-500 font-mono text-xs font-bold tracking-[0.3em] uppercase">09 // FOUNDATION_PROTOCOLS</h3>
+    </div>
+    <h2 class="text-5xl font-extrabold text-white tracking-tight">Academic Authorization</h2>
+  </div>
+
+  <div class="glass-card relative overflow-hidden group border-indigo-500/30 bg-[#080808] hover:border-indigo-500/60 transition-all duration-700">
+    
+    <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#6366f1 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+    <div class="grid md:grid-cols-12 gap-12 items-center relative z-10">
+      
+      <div class="md:col-span-4 flex justify-center py-8">
+        <div class="relative w-56 h-56">
+          <svg class="absolute inset-0 animate-spin-slow opacity-40" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="48" fill="none" stroke="var(--primary)" stroke-width="0.2" stroke-dasharray="1 5" />
+            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--primary)" stroke-width="1" stroke-dasharray="15 10" />
+          </svg>
+          
+          <svg class="absolute inset-0 animate-spin-reverse opacity-60" viewBox="0 0 100 100">
+            <path d="M50 20 L76 35 L76 65 L50 80 L24 65 L24 35 Z" fill="none" stroke="var(--primary)" stroke-width="0.5" />
+          </svg>
+
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <div class="text-white font-black text-4xl tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">B.TECH</div>
+            <div class="text-[7px] font-mono text-indigo-400 tracking-[0.5em] uppercase mt-2 font-bold">SMVEC_CERT_01</div>
+          </div>
+          
+          <div class="absolute inset-10 border border-emerald-500/40 rounded-full animate-ping"></div>
+        </div>
+      </div>
+
+      <div class="md:col-span-8">
+        <div class="space-y-8">
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 font-mono text-[9px] font-bold uppercase tracking-widest">
+                Protocol: FULLY_INTEGRATED
+              </span>
+            </div>
+            <h4 class="text-white text-3xl md:text-5xl font-black tracking-tight leading-none mb-4">
+              Information Technology
+            </h4>
+            <div class="flex items-center gap-3">
+              <div class="w-2 h-2 bg-indigo-500 rounded-full shadow-[0_0_8px_#6366f1]"></div>
+              <p class="text-slate-200 font-bold text-lg tracking-tight">
+                Sri Manakular Vinayagar Engineering College
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-8 pt-8 border-t border-white/5">
+            <div>
+              <p class="text-slate-500 font-mono text-[10px] uppercase tracking-widest mb-2">Init_Date</p>
+              <p class="text-white font-bold text-base">Class of 2017</p>
+            </div>
+            <div>
+              <p class="text-slate-500 font-mono text-[10px] uppercase tracking-widest mb-2">Authority</p>
+              <p class="text-white font-bold text-base">Puducherry Uni</p>
+            </div>
+            <div class="col-span-2 md:col-span-1">
+              <p class="text-slate-500 font-mono text-[10px] uppercase tracking-widest mb-2">System_Status</p>
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-500 font-bold text-base uppercase">Authorized</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <p class="text-slate-600 font-mono text-[9px] uppercase mb-3">Core_Competency_Loadouts</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-indigo-500/5 border border-indigo-500/10 px-3 py-1 text-[10px] font-mono text-indigo-300">DATA_STRUCTURES</span>
+              <span class="bg-indigo-500/5 border border-indigo-500/10 px-3 py-1 text-[10px] font-mono text-indigo-300">ALGORITHMS_V1</span>
+              <span class="bg-indigo-500/5 border border-indigo-500/10 px-3 py-1 text-[10px] font-mono text-indigo-300">OS_KERNELS</span>
+              <span class="bg-indigo-500/5 border border-indigo-500/10 px-3 py-1 text-[10px] font-mono text-indigo-300">NETWORKS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 px-6 py-4 bg-indigo-500/5 border-t border-indigo-500/10 flex items-center justify-between font-mono text-[9px] text-slate-500">
+      <div class="flex items-center gap-6">
+        <span class="text-indigo-400"># FOUNDATION_LAYER_LOCKED</span>
+        <span class="hidden md:inline text-slate-800">|</span>
+        <span class="hidden md:inline">NODE: SMVEC_PROTO_042</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="animate-pulse text-emerald-500">STABLE_INTEGRITY</span>
+        <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-[0_0_5px_#10b981]"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-6 pb-32">
+  <div class="mb-12 reveal">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="h-[1px] w-12 bg-indigo-500"></div>
+      <h3 class="text-indigo-500 font-mono text-xs font-bold tracking-[0.3em] uppercase">10 // LINGUISTIC_MODULES</h3>
+    </div>
+    <h2 class="text-5xl font-extrabold text-white tracking-tight">Communication Protocols</h2>
+  </div>
+
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="glass-card p-6 border-l-2 border-indigo-500 hover:bg-indigo-500/5 transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h4 class="text-white font-bold text-lg tracking-widest uppercase">English</h4>
+          <p class="text-[9px] text-indigo-400 font-mono">GLOBAL_COMM_LAYER</p>
+        </div>
+        <span class="text-[10px] font-mono text-emerald-500 animate-pulse">OPTIMAL</span>
+      </div>
+      <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+        <div class="h-full bg-indigo-500 w-[95%] shadow-[0_0_10px_#6366f1]"></div>
+      </div>
+      <p class="mt-4 text-[10px] text-slate-500 font-mono uppercase tracking-tighter">Status: Proficient</p>
+    </div>
+
+    <div class="glass-card p-6 border-l-2 border-indigo-500 hover:bg-indigo-500/5 transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h4 class="text-white font-bold text-lg tracking-widest uppercase">Tamil</h4>
+          <p class="text-[9px] text-indigo-400 font-mono">NATIVE_CORE_V1</p>
+        </div>
+        <span class="text-[10px] font-mono text-emerald-500">OPTIMAL</span>
+      </div>
+      <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+        <div class="h-full bg-indigo-500 w-[100%] shadow-[0_0_10px_#6366f1]"></div>
+      </div>
+      <p class="mt-4 text-[10px] text-slate-500 font-mono uppercase tracking-tighter">Status: Proficient</p>
+    </div>
+
+    <div class="glass-card p-6 border-l-2 border-indigo-500 hover:bg-indigo-500/5 transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h4 class="text-white font-bold text-lg tracking-widest uppercase">Malayalam</h4>
+          <p class="text-[9px] text-indigo-400 font-mono">REGIONAL_SYNC_01</p>
+        </div>
+        <span class="text-[10px] font-mono text-emerald-500">STABLE</span>
+      </div>
+      <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+        <div class="h-full bg-indigo-500 w-[90%] shadow-[0_0_10px_#6366f1]"></div>
+      </div>
+      <p class="mt-4 text-[10px] text-slate-500 font-mono uppercase tracking-tighter">Status: Proficient</p>
+    </div>
+
+    <div class="glass-card p-6 border-l-2 border-indigo-500 hover:bg-indigo-500/5 transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h4 class="text-white font-bold text-lg tracking-widest uppercase">Hindi</h4>
+          <p class="text-[9px] text-indigo-400 font-mono">REGIONAL_SYNC_02</p>
+        </div>
+        <span class="text-[10px] font-mono text-emerald-500">STABLE</span>
+      </div>
+      <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+        <div class="h-full bg-indigo-500 w-[85%] shadow-[0_0_10px_#6366f1]"></div>
+      </div>
+      <p class="mt-4 text-[10px] text-slate-500 font-mono uppercase tracking-tighter">Status: Proficient</p>
+    </div>
+
+    <div class="glass-card p-6 border-l-2 border-warning hover:bg-warning/5 transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h4 class="text-white font-bold text-lg tracking-widest uppercase">French</h4>
+          <p class="text-[9px] text-warning font-mono">ALPHA_EXPERIMENTAL</p>
+        </div>
+        <span class="text-[10px] font-mono text-warning animate-pulse">LOADING_30%</span>
+      </div>
+      <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+        <div class="h-full bg-warning w-[30%] shadow-[0_0_10px_#f59e0b]"></div>
+      </div>
+      <p class="mt-4 text-[10px] text-slate-500 font-mono uppercase tracking-tighter">Status: Beginner</p>
+    </div>
+  </div>
+</section>
+<section class="max-w-7xl mx-auto px-6 pb-32" id="contact">
+  <div class="mb-12 reveal">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="h-[1px] w-12 bg-indigo-500"></div>
+      <h3 class="text-indigo-500 font-mono text-xs font-bold tracking-[0.3em] uppercase">12 // INITIATE_AND_STAY_RESIDENT</h3>
+    </div>
+    <h2 class="text-5xl font-extrabold text-white tracking-tight">System Contact</h2>
+  </div>
+
+  <div class="glass-card grid lg:grid-cols-2 gap-16 items-center p-12 overflow-hidden relative">
+    <div class="relative flex justify-center items-center py-20">
+  <div class="absolute inset-0 bg-indigo-500/5 blur-[120px] rounded-full"></div>
+  
+  <div class="absolute w-96 h-96 border-2 border-dashed border-indigo-500/20 rounded-full animate-spin-slow"></div>
+  <div class="absolute w-[450px] h-[450px] border border-slate-800 rounded-full animate-spin-reverse opacity-50"></div>
+  
+  <div class="relative z-10 group">
+    
+    <div class="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-indigo-500 z-20"></div>
+    <div class="absolute -top-4 -right-4 w-8 h-8 border-t-2 border-r-2 border-indigo-500 z-20"></div>
+    <div class="absolute -bottom-4 -left-4 w-8 h-8 border-b-2 border-l-2 border-indigo-500 z-20"></div>
+    <div class="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-indigo-500 z-20"></div>
+
+    <div class="absolute top-4 left-4 z-30 font-mono text-[8px] text-indigo-400 tracking-[0.2em] bg-black/60 px-2 py-1 backdrop-blur-sm border border-indigo-500/30">
+      SUBJECT: ARCHIOT_ANIL
+    </div>
+    <div class="absolute bottom-4 right-4 z-30 font-mono text-[8px] text-emerald-500 tracking-[0.2em] bg-black/60 px-2 py-1 backdrop-blur-sm border border-emerald-500/30 animate-pulse">
+      STATUS: AUTHORIZED_ENGR
+    </div>
+
+    <div class="relative overflow-hidden rounded-lg border border-white/10 shadow-[0_0_50px_rgba(99,102,241,0.2)]">
+      <div class="absolute inset-0 w-full h-[2px] bg-indigo-400/50 shadow-[0_0_15px_rgba(99,102,241,1)] z-20 animate-[scan_4s_linear_infinite]"></div>
+      
+    <div class="relative w-80 h-80 flex items-center justify-center overflow-hidden rounded-2xl border border-indigo-500/30 bg-[#020202] shadow-[inset_0_0_50px_rgba(99,102,241,0.2)] group">
+  
+  <svg class="absolute inset-0 w-full h-full opacity-40" viewBox="0 0 100 100">
+    <defs>
+      <radialGradient id="nodeGradient">
+        <stop offset="0%" stop-color="#6366f1" />
+        <stop offset="100%" stop-color="transparent" />
+      </radialGradient>
+    </defs>
+    <path d="M0 20 H100 M0 40 H100 M0 60 H100 M0 80 H100 M20 0 V100 M40 0 V100 M60 0 V100 M80 0 V100" 
+          stroke="#1e293b" stroke-width="0.2" fill="none" />
+    
+    <g class="text-indigo-500/30">
+      <line x1="20" y1="20" x2="50" y2="50" stroke="currentColor" stroke-width="0.5" stroke-dasharray="2 2">
+        <animate attributeName="stroke-dashoffset" values="0;20" dur="3s" repeatCount="indefinite" />
+      </line>
+      <line x1="80" y1="20" x2="50" y2="50" stroke="currentColor" stroke-width="0.5" />
+      <line x1="50" y1="50" x2="50" y2="90" stroke="currentColor" stroke-width="0.5" />
+    </g>
+  </svg>
+
+  <div class="relative z-10 w-48 h-48">
+    <div class="absolute inset-0 border border-indigo-500/50 rounded-full animate-spin-slow border-t-transparent"></div>
+    <div class="absolute inset-4 flex items-center justify-center">
+      <svg viewBox="0 0 100 100" class="w-full h-full text-indigo-500 drop-shadow-[0_0_15px_rgba(99,102,241,0.8)]">
+        <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="none" stroke="currentColor" stroke-width="2" />
+        <circle cx="50" cy="50" r="15" fill="currentColor" class="animate-pulse" />
+      </svg>
+    </div>
+  </div>
+
+  <div class="absolute top-4 right-4 font-mono text-[6px] text-slate-500 text-right">
+    CPU_UTIL: 42%<br>
+    MEM_ALLOC: 1.2GB<br>
+    SYNC_STAT: OPTIMAL
+  </div>
+
+  <div class="absolute bottom-4 left-4 font-mono text-[7px] text-indigo-400 animate-pulse">
+    > ACCESSING_NEURAL_LAYERS...
+  </div>
+
+  <div class="absolute inset-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
+  <div class="absolute inset-0 w-full h-1 bg-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.5)] z-20 animate-[scan_4s_linear_infinite]"></div>
+</div>
+      <div class="absolute inset-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+    </div>
+    
+    <div class="absolute -right-24 top-1/2 -translate-y-1/2 hidden lg:block space-y-4">
+      <div class="w-16 h-[1px] bg-indigo-500/40 relative">
+        <span class="absolute left-full ml-2 top-[-6px] font-mono text-[7px] text-slate-500 whitespace-nowrap uppercase">Bio_Link: Active</span>
+      </div>
+      <div class="w-12 h-[1px] bg-indigo-500/40 relative">
+        <span class="absolute left-full ml-2 top-[-6px] font-mono text-[7px] text-slate-500 whitespace-nowrap uppercase">Neural_Load: 14%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="space-y-6 relative z-10">
+      <p class="text-slate-400 font-mono text-xs mb-8 uppercase tracking-[0.2em]">Ready to establish handshake protocol...</p>
+      
+      <a href="tel:+918754826729" class="contact-link flex items-center gap-6 p-4 border border-white/5 rounded transition-all duration-300 group">
+        <div class="text-indigo-500 group-hover:scale-125 transition-transform">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-500 font-mono uppercase tracking-widest">Voice_Comm</span>
+          <span class="text-white font-bold text-lg">+91 87548 26729</span>
+        </div>
+      </a>
+
+      <a href="mailto:anilarchiot@gmail.com" class="contact-link flex items-center gap-6 p-4 border border-white/5 rounded transition-all duration-300 group">
+        <div class="text-indigo-500 group-hover:scale-125 transition-transform">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-500 font-mono uppercase tracking-widest">Data_Packet</span>
+          <span class="text-white font-bold text-lg">anilarchiot@gmail.com</span>
+        </div>
+      </a>
+
+      <a href="#" class="contact-link flex items-center gap-6 p-4 border border-white/5 rounded transition-all duration-300 group">
+        <div class="text-indigo-500 group-hover:scale-125 transition-transform">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-500 font-mono uppercase tracking-widest">Professional_Sync</span>
+          <span class="text-white font-bold text-lg">Archiot Anil | LinkedIn</span>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-6 p-4 border border-white/5 rounded opacity-70">
+        <div class="text-indigo-500">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-500 font-mono uppercase tracking-widest">Origin_Node</span>
+          <span class="text-white font-bold text-lg">Puducherry, India</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<footer class="max-w-7xl mx-auto px-6 pb-12">
+  <div class="h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-12"></div>
+  
+  <div class="grid md:grid-cols-2 gap-8 items-end">
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-[1px] bg-indigo-500"></div>
+        <span class="font-mono text-[10px] text-slate-500 tracking-[0.4em] uppercase">Built_with_Integrity</span>
+      </div>
+      <p class="text-slate-400 text-sm max-w-xs leading-relaxed">
+        Designing frontend ecosystems that survive scale. Engineering leadership rooted in logic, mentorship, and 
+        <span class="text-white">predictable delivery.</span>
+      </p>
+    </div>
+
+    <div class="md:text-right font-mono text-[9px] text-slate-600 uppercase tracking-widest">
+      <div class="flex flex-col md:items-end gap-2">
+        <div class="flex gap-6 mb-4">
+          <a href="#" class="hover:text-indigo-400 transition-colors underline decoration-indigo-500/30">LinkedIn</a>
+          <a href="#" class="hover:text-indigo-400 transition-colors underline decoration-indigo-500/30">GitHub</a>
+          <a href="#" class="hover:text-indigo-400 transition-colors underline decoration-indigo-500/30">Architecture_Docs</a>
+        </div>
+        <p>© 2026 ARCHIOT_ANIL // REV_8.4.2</p>
+        <p class="text-[8px] opacity-50">STAY_CURIOUS // KEEP_BUILDING</p>
+      </div>
+    </div>
+  </div>
+</footer>
+</section>
+
+<script>
+(function() {
+  const canvas = document.getElementById('main-canvas');
+  const ctx = canvas.getContext('2d');
+  const logPipe = document.getElementById('log-pipe');
+  const teamRow = document.getElementById('team-sync-row');
+  const mentorFeed = document.getElementById('mentor-feed');
+  const clickPrompt = document.getElementById('click-prompt');
+  
+  let width, height, particles = [];
+  const squadTasks = ["Architecture Review", "RxJS Optimization", "Signals Migration", "Design Tokens", "Squad Sync", "Release Ready"];
+
+  const sync = () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    particles = [];
+    for(let i=0; i<80; i++) particles.push(new Dot());
+  };
+
+  function Dot() {
+    this.x = Math.random() * width;
+    this.y = Math.random() * height;
+    this.s = Math.random() * 1.5;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+    this.render = () => {
+      ctx.fillStyle = '#6366f1';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.s, 0, Math.PI * 2);
+      ctx.fill();
+    };
+    this.move = () => {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x > width || this.x < 0) this.vx *= -1;
+      if (this.y > height || this.y < 0) this.vy *= -1;
+    };
+  }
+
+  const loop = () => {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach(p => { p.move(); p.render(); });
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            if (dx*dx + dy*dy < 15000) {
+                ctx.strokeStyle = 'rgba(99, 102, 241, 0.05)';
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+            }
+        }
+    }
+    requestAnimationFrame(loop);
+  };
+
+  const initMentorship = () => {
+    for (let i = 0; i < 6; i++) {
+      const wrap = document.createElement('div');
+      wrap.className = 'figure-wrap flex items-center cursor-pointer';
+      wrap.innerHTML = `<svg width="35" height="50" viewBox="0 0 40 60" class="figure-node"><circle cx="20" cy="15" r="8"/><path d="M20,25 L20,45 M10,35 L30,35 M20,45 L10,58 M20,45 L30,58" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>${i < 5 ? `<svg width="25" height="2" class="connector-line"><line x1="0" y1="1" x2="25" y2="1" stroke-width="2" /></svg>` : ''}`;
+      wrap.onclick = () => {
+        const activeCount = document.querySelectorAll('.figure-wrap.active').length;
+        if (i !== activeCount) return;
+        wrap.classList.add('active');
+        mentorFeed.innerText = `[SUCCESS] >> ${squadTasks[i]}`;
+        movePrompt(i + 1);
+      };
+      teamRow.appendChild(wrap);
+    }
+  };
+
+  const movePrompt = (index) => {
+    if (index >= 6) { clickPrompt.style.opacity = '0'; return; }
+    const figures = document.querySelectorAll('.figure-wrap');
+    if(!figures[index]) return;
+    const rect = figures[index].getBoundingClientRect();
+    const parentRect = teamRow.getBoundingClientRect();
+    clickPrompt.style.transform = `translateX(${rect.left - parentRect.left}px)`;
+    clickPrompt.style.opacity = '1';
+  };
+
+  const animateVelocity = () => {
+    const packet = document.getElementById('sprint-packet');
+    if(!packet) return;
+    packet.style.opacity = "1";
+    const run = () => {
+      packet.style.transition = 'none';
+      packet.style.left = '0%';
+      packet.offsetHeight;
+      packet.style.transition = 'left 0.8s cubic-bezier(0.45, 0, 0.55, 1)';
+      packet.style.left = '100%';
+      setTimeout(run, 1800);
+    };
+    run();
+  };
+
+  const initQualityFilter = () => {
+    const container = document.getElementById('quality-container');
+    const spawn = () => {
+      const p = document.createElement('div');
+      const isDefect = Math.random() > 0.6;
+      p.className = 'particle';
+      p.style.backgroundColor = isDefect ? 'var(--error)' : 'var(--primary)';
+      p.style.left = '0%';
+      p.style.top = Math.random() * 80 + 10 + '%';
+      container.appendChild(p);
+      const anim = p.animate([{ left: '0%', opacity: 1 }, { left: '49%', opacity: 1 }, { left: isDefect ? '49%' : '100%', opacity: isDefect ? 0 : 1 }], { duration: 2000, easing: 'linear' });
+      anim.onfinish = () => p.remove();
+    };
+    setInterval(spawn, 300);
+  };
+
+  const initLibraryAnim = () => {
+    const container = document.getElementById('library-container');
+    const spawn = () => {
+      const box = document.createElement('div');
+      box.className = 'comp-box';
+      container.appendChild(box);
+      const inward = box.animate([{ left: '10%', top: Math.random() * 80 + 10 + '%', opacity: 0, transform: 'scale(0.5)' }, { left: '45%', top: '45%', opacity: 1, transform: 'scale(1)' }], { duration: 1500, easing: 'ease-in' });
+      inward.onfinish = () => {
+        box.style.borderColor = 'var(--accent)';
+        const outward = box.animate([{ left: '50%', top: '45%', opacity: 1, transform: 'scale(1)' }, { left: '90%', top: Math.random() * 80 + 10 + '%', opacity: 0, transform: 'scale(1.2)' }], { duration: 1000, easing: 'ease-out' });
+        outward.onfinish = () => box.remove();
+      };
+    };
+    setInterval(spawn, 600);
+  };
+
+  const initPerformanceGauge = () => {
+    const fill = document.getElementById('gauge-fill');
+    const score = document.getElementById('perf-score');
+    let currentScore = 60;
+    
+    const interval = setInterval(() => {
+      currentScore++;
+      score.innerText = currentScore;
+      if(currentScore >= 94) {
+        clearInterval(interval);
+        score.classList.remove('text-slate-500');
+        score.classList.add('text-emerald-500');
+      }
+    }, 40);
+
+    const circumference = 2 * Math.PI * 45;
+    const targetOffset = circumference - (94 / 100) * circumference;
+    fill.style.strokeDashoffset = targetOffset;
+    fill.style.stroke = 'var(--accent)';
+  };
+
+  const runLogs = () => {
+    const msgs = ["CACHE_HIT_98%", "LCP_OPTIMIZED", "BUNDLE_SHAVED_240KB", "HYDRATION_SUCCESS", "V8_WARMUP"];
+    setInterval(() => {
+      const entry = document.createElement('div');
+      entry.innerHTML = `<span class="opacity-40">[${new Date().toLocaleTimeString()}]</span> ${msgs[Math.floor(Math.random() * msgs.length)]}`;
+      logPipe.prepend(entry);
+      if(logPipe.children.length > 5) logPipe.lastChild.remove();
+    }, 3000);
+  };
+
+  const counter = (el) => {
+    const goal = +el.dataset.val;
+    let curr = 0;
+    const tick = () => {
+      curr += goal / 80;
+      if (curr < goal) { el.innerText = Math.ceil(curr).toLocaleString() + "+"; setTimeout(tick, 20); } 
+      else { el.innerText = goal.toLocaleString() + "+"; }
+    };
+    tick();
+  };
+
+  window.addEventListener('mousemove', e => {
+    const loadEl = document.getElementById('load-pct');
+    if(loadEl) loadEl.innerText = Math.floor((e.x / window.innerWidth) * 100);
+  });
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        e.target.classList.add('active');
+        const c = e.target.querySelector('.count-me');
+        if(c && !c.dataset.done) { counter(c); c.dataset.done = "1"; }
+        if(e.target.contains(teamRow)) movePrompt(0);
+        if(e.target.contains(document.getElementById('sprint-packet'))) animateVelocity();
+        if(e.target.id === 'quality-container' && !e.target.dataset.started) { initQualityFilter(); e.target.dataset.started = "true"; }
+        if(e.target.id === 'library-container' && !e.target.dataset.started) { initLibraryAnim(); e.target.dataset.started = "true"; }
+        if(e.target.id === 'performance-container' && !e.target.dataset.started) { initPerformanceGauge(); e.target.dataset.started = "true"; }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  sync(); loop(); runLogs(); initMentorship();
+  document.querySelectorAll('.reveal, #quality-container, #library-container, #performance-container').forEach(r => obs.observe(r));
+  window.addEventListener('resize', sync);
+})();
+</script>
+
+</body>
+</html>
